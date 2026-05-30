@@ -997,25 +997,28 @@ function handleImageUpload(file) {
 
     // Kodun geri kalanı (adminModuAktifMi...) aynen devam etmeli
 
-    // 1. Limit ve Admin Kontrolleri
-    const adminModuAktifMi = localStorage.getItem('artlink_admin_modu') === 'true';
+// 1. Limit ve Admin Kontrolleri (Hafıza Boşsa Patlamayan Güvenli Sürüm)
+const adminModuAktifMi = localStorage.getItem('artlink_admin_modu') === 'true';
 
-    if (!adminModuAktifMi) {
-        const bugun = new Date().toLocaleDateString('tr-TR');
-        let yuklemeGecmisi = JSON.parse(localStorage.getItem('artlink_limit_sistemi'));
+if (!adminModuAktifMi) {
+    const bugun = new Date().toLocaleDateString('tr-TR');
+    let yuklemeGecmisi = JSON.parse(localStorage.getItem('artlink_limit_sistemi'));
 
-        if (!yuklemeGecmisi || yuklemeGecmisi.tarih !== bugun) {
-            yuklemeGecmisi = { tarih: bugun, sayac: 0 };
-        }
-
-        if (yuklemeGecmisi.sayac >= 25) {
-            alert(`Günlük yükleme limitine ulaştınız (25/25)!\nHaklarınız yarın tekrardan yenilenecektir.`);
-            resetArtLink();
-            return; 
-        }
+    // ⚠️ EĞER HAFIZA BOŞSA VEYA GÜN DEĞİŞTİYSE YENİDEN BAŞLAT (Hata vermesini önleyen kritik satır)
+    if (!yuklemeGecmisi || yuklemeGecmisi.tarih !== bugun) {
+        yuklemeGecmisi = { tarih: bugun, sayac: 0 };
+        localStorage.setItem('artlink_limit_sistemi', JSON.stringify(yuklemeGecmisi));
     }
 
-    const apiKey = 'd53921b0e29046a4d7b694c5549f4b04'; 
+    // Artık 'sayac' kesinlikle var olduğu için asla çökmeyecek:
+    if (yuklemeGecmisi.sayac >= 25) {
+        alert(`Günlük yükleme limitine ulaştınız (25/25)!\nHaklarınız yarın tekrardan yenilenecektir.`);
+        resetArtLink();
+        return; 
+    }
+}
+
+    const apiKey = '0d55b60e7fa4a50abd1ed526645282ba'; 
 
     // 2. Arayüz Değişimi: Yükleme alanını kapat, Görsel İşleniyor ekranını aç!
     document.getElementById('artlink-upload-zone').style.display = 'none';
@@ -1057,12 +1060,10 @@ function handleImageUpload(file) {
         }
     })
     .catch(error => {
-    console.error('Hata:', error);
-    // Sadece "Sunucuya bağlanılamadı" demek yerine gerçek hatayı ekrana bassın:
-    alert('Sunucuya bağlanılamadı. Detay: ' + error.message);
-    resetArtLink();
-});
-    
+        console.error('Hata:', error);
+        alert('Sunucuya bağlanılamadı.');
+        resetArtLink();
+    });
 }
 
 // Sistemi sıfırlayıp ilk ekrana döndüren fonksiyon
