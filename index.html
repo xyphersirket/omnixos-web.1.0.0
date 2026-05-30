@@ -1,0 +1,1189 @@
+<!DOCTYPE html>  
+<html lang="tr">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+    <title>OmniXOS - Desktop</title>  
+    <style>  
+        * {  
+            margin: 0;  
+            padding: 0;  
+            box-sizing: border-box;  
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;  
+            
+            /* GÜVENLİK: Yazı seçimini ve sürüklemeyi tüm tarayıcılarda engeller */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }  
+        
+        body, html {  
+            height: 100%;  
+            overflow: hidden;  
+            background-color: #000;  
+        }  
+
+        /* GÜVENLİK: Görsellerin indirilmesini, sağ tıklanmasını ve sürüklenmesini engelleme */
+        img {
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+
+        /* ANA ARKA PLAN */  
+        .background-container {  
+            background-image: url('https://r.resimlink.com/QlWI-SGy.jpg');  
+            background-size: cover;  
+            background-position: center;  
+            height: 100%;  
+            width: 100%;  
+            position: relative;  
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+        }  
+
+        .overlay {  
+            position: absolute;  
+            top: 0;  
+            left: 0;  
+            width: 100%;  
+            height: 100%;  
+            background: rgba(0, 0, 0, 0.1);  
+            z-index: 1;  
+        }  
+
+        /* ANA KONTEYNER */  
+        .content-box {  
+            position: relative;  
+            z-index: 2;  
+            text-align: center;  
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);  
+            width: 100%;  
+            display: flex;  
+            flex-direction: column;  
+            align-items: center;  
+        }  
+
+        .logo {  
+            width: 140px;   
+            height: auto;  
+            margin-bottom: 5px;  
+            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.35));  
+            transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);  
+        }  
+
+        /* LOGO VE İSİM BLOK DÜZENİ */  
+        .brand-wrapper {  
+            display: inline-block;  
+            text-align: left;  
+        }  
+
+        .brand-name {  
+            font-size: 4.5rem;  
+            font-weight: 700;  
+            letter-spacing: -2px;  
+            color: #ffffff;  
+            text-shadow: 0 10px 30px rgba(0,0,0,0.6);  
+            transition: font-size 1.2s cubic-bezier(0.25, 1, 0.5, 1);  
+            line-height: 1;  
+        }  
+
+        .xos-style {  
+            background: linear-gradient(135deg, #fcd5ce 0%, #e2d1f9 25%, #d1ede1 50%, #e2d1f9 75%, #fcd5ce 100%);  
+            background-size: 200% auto;  
+            -webkit-background-clip: text;  
+            -webkit-text-fill-color: transparent;  
+            background-clip: text;  
+            display: inline-block;  
+            font-weight: 800;  
+            animation: shine 5s linear infinite;  
+        }  
+
+        /* YÜKLEME ÇUBUĞU VE METNİ */  
+        .boot-elements {  
+            opacity: 1;  
+            transition: opacity 0.5s ease-out;  
+            width: 100%;  
+            text-align: center;  
+        }  
+
+        .boot-text {  
+            color: rgba(255, 255, 255, 0.65);  
+            font-size: 0.9rem;  
+            font-weight: 400;  
+            letter-spacing: 1px;  
+            margin-top: 15px;  
+            animation: pulse 2s infinite ease-in-out;  
+        }  
+
+        .boot-loader {  
+            width: 160px;  
+            height: 2px;  
+            background: rgba(255, 255, 255, 0.1);  
+            margin: 8px auto 0;  
+            position: relative;  
+            overflow: hidden;  
+            border-radius: 10px;  
+        }  
+
+        .boot-progress {  
+            width: 0%;  
+            height: 100%;  
+            background: #ffffff;  
+            transition: width 0.2s ease-out; 
+        }  
+
+        /* YAPIŞIK TARİH VE SAAT PANELİ */  
+        .status-meta-box {  
+            display: flex;  
+            justify-content: space-between;  
+            width: 100%;  
+            padding: 8px 4px 0 4px;  
+            color: rgba(255, 255, 255, 0.5);  
+            font-size: 0.85rem;  
+            font-weight: 500;  
+            letter-spacing: 0px;  
+            opacity: 0;  
+            transform: translateY(-5px);  
+            transition: all 1s ease-out 0.4s;  
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);  
+        }  
+
+        .status-date-left {  
+            text-align: left;  
+        }  
+
+        .status-clock-right {  
+            text-align: right;  
+            font-weight: 600;  
+        }  
+
+        /* UYGULAMALAR */  
+        .desktop-apps {  
+            display: flex;  
+            justify-content: center;  
+            gap: 30px;   
+            margin-top: 40px;  
+            opacity: 0;  
+            transform: translateY(15px);  
+            transition: all 1s ease-out;  
+        }  
+
+        .app-item {  
+            text-align: center;  
+            cursor: pointer;  
+            width: 85px;  
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);  
+        }  
+
+        .app-item:hover { transform: scale(1.1); }  
+
+        .app-icon {  
+            width: 70px;  
+            height: 70px;  
+            object-fit: contain;  
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));  
+        }  
+
+        .app-label {  
+            color: rgba(255, 255, 255, 0.95);  
+            font-size: 0.8rem;  
+            font-weight: 500;  
+        }  
+
+        /* SİSTEM YÜKLENDİKTEN SONRAKİ DEĞİŞİMLER */  
+        .is-loaded { transform: translateY(-14vh); }   
+        .is-loaded .boot-elements { display: none; }  
+        .is-loaded .desktop-apps { opacity: 1; transform: translateY(0); }  
+        .is-loaded .status-meta-box { opacity: 1; transform: translateY(0); }  
+          
+        .is-loaded .logo {   
+            width: 115px;   
+        }  
+        .is-loaded .brand-name {   
+            font-size: 3.6rem;   
+        }  
+
+        /* PANELLER VE AKICI ANİMASYON SİSTEMİ */  
+        .full-panel {  
+            position: fixed;  
+            top: 0;  
+            left: 0;  
+            width: 100%;  
+            height: 100%;  
+            background-color: #000000;  
+            z-index: 9999;  
+            display: none;  
+            flex-direction: column;  
+            align-items: center;  
+            color: #ffffff;  
+        }  
+
+        .slide-in {  
+            animation: slideInRight 0.65s cubic-bezier(0.32, 0.94, 0.6, 1) forwards;  
+        }  
+
+        .slide-out {  
+            animation: slideOutRight 0.65s cubic-bezier(0.32, 0.94, 0.6, 1) forwards;  
+        }  
+
+        #settings-screen {  
+            background: #000000;  
+        }  
+
+        #about-screen {  
+            background: linear-gradient(180deg, #2a1b4d 0%, #1a1231 40%, #000000 100%);  
+        }  
+
+        .panel-header {  
+            width: 100%;  
+            padding: 40px 0 20px 0;  
+            text-align: center;  
+            position: relative;  
+        }  
+
+        .panel-title {  
+            font-size: 1.8rem;  
+            font-weight: 700;  
+        }  
+
+        .settings-back-btn {  
+            position: absolute;  
+            left: 12px;  
+            top: 54px;  
+            background: none;  
+            border: none;  
+            color: #0a84ff;  
+            font-size: 1.05rem;  
+            font-weight: 500;  
+            cursor: pointer;  
+            z-index: 10;  
+        }  
+
+        .back-btn-img {  
+            position: absolute;  
+            left: 25px;  
+            top: 35px;  
+            background: rgba(255, 255, 255, 0.1);  
+            border: 1px solid rgba(255, 255, 255, 0.2);  
+            border-radius: 14px;  
+            cursor: pointer;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            padding: 8px;  
+            backdrop-filter: blur(10px);  
+            transition: all 0.3s ease;  
+        }  
+
+        .back-btn-img img {  
+            width: 26px;   
+            height: 26px;  
+        }  
+
+        /* AYARLAR BUTONU */  
+        .settings-btn {  
+            width: 92%;  
+            max-width: 580px;  
+            background-color: #1c1c1e;  
+            border: none;  
+            border-radius: 12px;  
+            padding: 10px 14px;  
+            display: flex;  
+            align-items: center;  
+            cursor: pointer;  
+            margin-top: 10px;  
+        }  
+
+        .icon-container {  
+            width: 34px;   
+            height: 34px;  
+            background-color: #3a3a3c;   
+            border-radius: 8px;  
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+            margin-right: 14px;  
+        }  
+
+        .settings-btn-icon { width: 100%; height: 100%; object-fit: cover; }  
+        .settings-btn-text { color: #ffffff; font-size: 1.08rem; flex-grow: 1; text-align: left; font-weight: 800; }  
+        .faded-edge-chevron { font-size: 1rem; color: rgba(255, 255, 255, 0.15); margin-left: 2px; }  
+
+        /* HAKKINDA İÇERİK */  
+        .about-content {  
+            flex-grow: 1;  
+            display: flex;  
+            flex-direction: column;  
+            align-items: center;  
+            justify-content: flex-start;  
+            padding-top: 45px;   
+            width: 100%;  
+        }  
+
+        .about-logo {  
+            width: 260px;  
+            height: auto;  
+            margin-bottom: 0;  
+            filter: drop-shadow(0 8px 35px rgba(0, 0, 0, 0.5));  
+        }  
+
+        .version-text {  
+            color: rgba(255, 255, 255, 0.4);   
+            font-size: 1rem;  
+            font-weight: 500;  
+            margin-top: -96px;  
+            margin-bottom: 120px;   
+        }  
+
+        /* BİLGİ GRUPLARI */  
+        .info-button-group {  
+            width: 92%;  
+            max-width: 580px;  
+            display: flex;  
+            flex-direction: column;  
+            margin-top: 30px;   
+        }  
+
+        .info-row-btn {  
+            width: 100%;  
+            background: rgba(255, 255, 255, 0.08);   
+            border: none;   
+            padding: 18px 20px;  
+            display: flex;  
+            justify-content: space-between;  
+            align-items: center;  
+            cursor: default;   
+            pointer-events: none;   
+        }  
+
+        .info-row-btn:first-child {  
+            border-top-left-radius: 20px;  
+            border-top-right-radius: 20px;  
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);  
+        }  
+
+        .info-row-btn:last-child {  
+            border-bottom-left-radius: 20px;  
+            border-bottom-right-radius: 20px;  
+        }  
+
+        .single-info-box {  
+            width: 92%;  
+            max-width: 580px;  
+            background: rgba(255, 255, 255, 0.08);   
+            border-radius: 20px;  
+            padding: 18px 20px;  
+            display: flex;  
+            justify-content: space-between;  
+            align-items: center;  
+            margin-top: 15px;   
+            cursor: default;  
+            pointer-events: none;  
+        }  
+
+        .info-left-text {  
+            color: rgba(255, 255, 255, 0.9);  
+            font-size: 1.05rem;  
+            font-weight: 500;   
+        }  
+
+        .info-right-text {  
+            color: rgba(255, 255, 255, 0.4);   
+            font-size: 1rem;  
+        }  
+          
+        /* GELİŞMİŞ AYARLAR TASARIMI */  
+        #settings-screen {  
+            background:  
+            radial-gradient(circle at top left, rgba(120, 119, 198, 0.18), transparent 30%),  
+            radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent 25%),  
+            linear-gradient(180deg, #050505 0%, #0b0b0d 100%);  
+            backdrop-filter: blur(20px);  
+        }  
+
+        #settings-screen .panel-header {  
+            padding-top: 55px;  
+            padding-bottom: 28px;  
+        }  
+
+        #settings-screen .panel-title {  
+            font-size: 2rem;  
+            font-weight: 750;  
+            letter-spacing: -0.5px;  
+            color: #ffffff;  
+            text-shadow: 0 5px 18px rgba(0,0,0,0.45);  
+        }  
+
+        .settings-back-btn {  
+            background: rgba(255,255,255,0.06);  
+            border: 1px solid rgba(255,255,255,0.08);  
+            padding: 10px 18px;  
+            border-radius: 14px;  
+            backdrop-filter: blur(12px);  
+            transition: all 0.3s ease;  
+            color: #ffffff;  
+            font-weight: 600;  
+        }  
+
+        .settings-back-btn:hover {  
+            background: rgba(255,255,255,0.12);  
+            transform: scale(1.03);  
+        }  
+
+        .settings-btn {  
+            position: relative;  
+            overflow: hidden;  
+            background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));  
+            border: 1px solid rgba(255,255,255,0.08);  
+            border-radius: 26px;  
+            padding: 9px 17px;  
+            backdrop-filter: blur(20px);  
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);  
+            transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;  
+        }  
+
+        .settings-btn::before {  
+            content: "";  
+            position: absolute;  
+            top: 0;  
+            left: -120%;  
+            width: 70%;  
+            height: 100%;  
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);  
+            transform: skewX(-25deg);  
+            transition: 0.8s;  
+        }  
+
+        .settings-btn:hover::before {  
+            left: 150%;  
+        }  
+
+        .settings-btn:hover {  
+            transform: translateY(-4px) scale(1.01);  
+            background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));  
+            box-shadow: 0 18px 45px rgba(0,0,0,0.45), 0 0 25px rgba(255,255,255,0.05);  
+        }  
+
+        .icon-container {  
+            width: 38px;  
+            height: 38px;  
+            border-radius: 16px;  
+            background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));  
+            border: 1px solid rgba(255,255,255,0.08);  
+            backdrop-filter: blur(10px);  
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 6px 20px rgba(0,0,0,0.35);  
+            transition: all 0.35s ease;  
+        }  
+
+        .settings-btn:hover .icon-container {  
+            transform: scale(1.06) rotate(-2deg);  
+        }  
+
+        .settings-btn-text {  
+            font-size: 1.08rem;  
+            font-weight: 650;  
+            letter-spacing: -0.2px;  
+        }  
+
+        .faded-edge-chevron {  
+            color: rgba(255,255,255,0.28);  
+            font-size: 1.3rem;  
+            transition: all 0.3s ease;  
+        }  
+
+        .settings-btn:hover .faded-edge-chevron {  
+            transform: translateX(4px);  
+            color: rgba(255,255,255,0.55);  
+        }  
+
+        /* GESTURE PANEL */
+        .gesture-edge-container {  
+            position: fixed;  
+            top: 50%;  
+            transform: translateY(-50%) translateX(-100%);  
+            left: 0;  
+            width: 38px;  
+            height: 240px;  
+            z-index: 100000;  
+            display: flex;  
+            align-items: center;  
+            justify-content: flex-start;  
+            transition: transform 0.32s cubic-bezier(0.1, 0.9, 0.2, 1);  
+            pointer-events: none;  
+        }  
+
+        .gesture-fluid-curve {  
+            width: 100%;  
+            height: 100%;  
+            clip-path: path('M 0,0 C 0,50 14,85 36,120 C 14,155 0,190 0,240 Z');  
+            background: rgba(12, 13, 15, 0.74);  
+            backdrop-filter: blur(22px);  
+            -webkit-backdrop-filter: blur(22px);  
+            display: flex;  
+            align-items: center;  
+            justify-content: flex-start;  
+            padding-left: 6px;  
+            cursor: pointer;  
+            pointer-events: auto;  
+            border-right: 1px solid rgba(255, 255, 255, 0.06);  
+        }  
+
+        .gesture-fluid-curve::after {  
+            content: '';  
+            width: 9px;  
+            height: 9px;  
+            border-left: 2.2px solid rgba(255, 255, 255, 0.9);  
+            border-bottom: 2.2px solid rgba(255, 255, 255, 0.9);  
+            transform: rotate(45deg);  
+            display: block;  
+            margin-left: 3px;  
+        }  
+
+        .gesture-active {  
+            transform: translateY(-50%) translateX(0);  
+        }  
+
+        /* ======================================================= */
+        /* SADECE EKLENEN: ARTLINK ARAYÜZ STİLLERİ */
+        /* ======================================================= */
+        #artlink-screen {
+            background: radial-gradient(circle at top, #111e38 0%, #060a12 100%);
+        }
+
+        .artlink-container {
+            width: 92%;
+            max-width: 580px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 60px;
+        }
+
+        .artlink-dropzone {
+            width: 100%;
+            height: 280px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .artlink-dropzone:hover {
+            border-color: #0a84ff;
+            background: rgba(10, 132, 255, 0.04);
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            width: 74px;
+            height: 74px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+            transition: transform 0.3s ease;
+        }
+        .artlink-dropzone:hover .upload-icon { transform: translateY(-4px); opacity: 1; }
+
+        .upload-title { font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 5px; }
+        .upload-subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.4); }
+
+        .artlink-loading-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #0a84ff;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .artlink-success-view {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .result-image-wrapper {
+            width: 100%;
+            max-height: 200px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            background: #000;
+        }
+
+        .result-preview {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+
+        .link-group-box {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .link-label {
+            font-size: 0.85rem;
+            color: #0a84ff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .link-input-row {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .link-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .copy-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            padding: 0 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover { background: #0a84ff; color: #fff; }
+
+        .reset-btn {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .reset-btn:hover { background: rgba(255,255,255,0.15); }
+
+        /* KEYFRAMES */  
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes shine { to { background-position: 200% center; } }  
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }  
+        @keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }  
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.85; } }  
+    </style>  
+    
+    <link rel="preload" href="https://r.resimlink.com/QlWI-SGy.jpg" as="image">
+    <link rel="preload" href="https://r.resimlink.com/1_GkmOX.png" as="image">
+</head>  
+<body>  
+
+<div class="background-container">  
+    <div class="overlay"></div>  
+      
+    <div id="app-container" class="content-box">  
+        <img src="https://r.resimlink.com/1_GkmOX.png" alt="Logo" class="logo">  
+          
+        <div class="brand-wrapper">  
+            <h1 class="brand-name">Omni<span class="xos-style">XOS</span></h1>  
+              
+            <div class="status-meta-box">  
+                <span id="status-date" class="status-date-left">-- ---- ----</span>  
+                <span id="status-clock" class="status-clock-right">00:00:00</span>  
+            </div>  
+        </div>  
+          
+        <div class="boot-elements" id="boot-ui">  
+            <p class="boot-text" id="boot-status-text">Sistem Yükleniyor...</p>  
+            <div class="boot-loader"><div class="boot-progress" id="main-progress"></div></div>  
+        </div>  
+
+        <div class="desktop-apps">  
+            <div id="artlink-app" class="app-item">  
+                <img src="https://r.resimlink.com/rZ8PC1hJ.png" alt="ArtLink" class="app-icon">  
+                <p class="app-label">ArtLink</p>  
+            </div>  
+            <div id="settings-app" class="app-item">  
+                <img src="https://r.resimlink.com/yf3LHOvAecI.png" alt="Ayarlar" class="app-icon">  
+                <p class="app-label">Ayarlar</p>  
+            </div>  
+        </div>  
+    </div>  
+</div>  
+
+<div id="global-gesture-back" class="gesture-edge-container">  
+    <div class="gesture-fluid-curve" id="gesture-back-action"></div>  
+</div>  
+
+<div id="artlink-screen" class="full-panel">
+    <div class="panel-header">  
+        <button class="back-btn-img" onclick="closeAnimatedPanel('artlink-screen')">  
+            <img src="https://r.resimlink.com/xfhFuyOeTrG.png" alt="Geri">  
+        </button>  
+        <span class="panel-title">ArtLink</span>  
+    </div>  
+
+    <div class="artlink-container">
+        <input type="file" id="artlink-file-input" accept="image/*" style="display: none;">
+
+        <div class="artlink-dropzone" id="artlink-upload-zone" onclick="triggerFileSelect()">
+            <img src="https://r.resimlink.com/oO4kDm.png" alt="Upload" class="upload-icon" style="filter: none !important;  opacity: 0.5;">
+            <p class="upload-title">Görsel Seç veya Sürükle</p>
+            <p class="upload-subtitle">PNG, JPG, WEBP dosyaları desteklenir</p>
+        </div>
+
+        <div class="artlink-loading-view" id="artlink-loading-zone">
+            <div class="spinner"></div>
+            <p class="upload-title">Görsel İşleniyor...</p>
+            <p class="upload-subtitle">Linkler oluşturuluyor, lütfen bekleyin.</p>
+        </div>
+
+        <div class="artlink-success-view" id="artlink-success-zone">
+            <div class="result-image-wrapper">
+                <img src="" alt="Önizleme" class="result-preview" id="artlink-preview-img">
+            </div>
+
+            <div class="link-group-box">
+                <span class="link-label">Doğrudan Resim Linki (PNG)</span>
+                <div class="link-input-row">
+                    <div class="link-input" id="link-direct">https://r.resimlink.com/artlink_output.png</div>
+                    <button class="copy-btn" onclick="copyToClipboard('link-direct', this)">Kopyala</button>
+                </div>
+            </div>
+
+            <div class="link-group-box">
+                <span class="link-label">HTML Görsel Kodu</span>
+                <div class="link-input-row">
+                    <div class="link-input" id="link-html">&lt;img src="https://r.resimlink.com/artlink_output.png" alt="ArtLink Image"&gt;</div>
+                    <button class="copy-btn" onclick="copyToClipboard('link-html', this)">Kopyala</button>
+                </div>
+            </div>
+
+            <div class="link-group-box">
+                <span class="link-label">Markdown (Forumlar İçin)</span>
+                <div class="link-input-row">
+                    <div class="link-input" id="link-md">![ArtLink](https://r.resimlink.com/artlink_output.png)</div>
+                    <button class="copy-btn" onclick="copyToClipboard('link-md', this)">Kopyala</button>
+                </div>
+            </div>
+
+            <button class="reset-btn" onclick="resetArtLink()">Yeni Görsel Yükle</button>
+        </div>
+    </div>
+</div>
+
+<div id="settings-screen" class="full-panel">  
+    <div class="panel-header">  
+        <button class="settings-back-btn" onclick="closeAnimatedPanel('settings-screen')">Vazgeç</button>  
+        <span class="panel-title">Ayarlar</span>  
+    </div>  
+
+    <button class="settings-btn" onclick="openAnimatedPanel('about-screen')">  
+        <div class="icon-container">  
+            <img src="https://r.resimlink.com/z5FSqQ.png" alt="Icon" class="settings-btn-icon">  
+        </div>  
+        <span class="settings-btn-text">OmniXOS Hakkında</span>  
+        <span class="faded-edge-chevron">&gt;</span>  
+    </button>  
+</div>  
+
+<div id="about-screen" class="full-panel">  
+    <div class="panel-header">  
+        <button class="back-btn-img" onclick="closeAnimatedPanel('about-screen')">  
+            <img src="https://r.resimlink.com/xfhFuyOeTrG.png" alt="Geri">  
+        </button>  
+    </div>  
+    <div class="about-content">  
+        <img src="https://r.resimlink.com/yie5LMpKjVwY.png" alt="OmniXOS Logo" class="about-logo">  
+        <span class="version-text">1.0.0</span>  
+          
+        <div class="info-button-group">  
+            <div class="info-row-btn">  
+                <span class="info-left-text">XOS Adı</span>  
+                <span class="info-right-text">OmniXOS</span>  
+            </div>  
+            <div class="info-row-btn">  
+                <span class="info-left-text">XOS Sürümü</span>  
+                <span class="info-right-text">1.0.0</span>  
+            </div>  
+        </div>  
+
+        <div class="single-info-box">  
+            <span class="info-left-text">En son güncelleme</span>  
+            <span class="info-right-text">15.05.2026</span>  
+        </div>  
+
+        <div class="single-info-box">  
+            <span class="info-left-text">Güncelleme hakkında bilgi</span>  
+            <span class="info-right-text">Bulunmuyor</span>  
+        </div>  
+        <!-- Gizli Görünmez Buton Alanı -->
+<div style="text-align: center; margin-top: 10px;">
+    <button id="gizli-admin-btn" style="background: transparent; border: none; color: transparent; width: 100%; height: 20px; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent;">👑</button>
+</div>
+    </div>  
+</div>  
+
+<script>  
+    // GÜVENLİK: Sağ tıklama menüsünü tamamen kapatır (Görsel indirmeyi engellemek için)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    }, false);
+
+    // GÜVENLİK: Kopyalama (Ctrl+C, Ctrl+X vb.) ve geliştirici araçları kısayollarını engelleme
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'u' || e.key === 's')) {
+            // Sadece ArtLink link kutularında kopyalamaya izin ver, gerisini engelle
+            if (document.activeElement.classList.contains('link-input')) return;
+            e.preventDefault();
+        }
+        if (e.key === 'F12') {
+            e.preventDefault();
+        }
+    });
+
+    // GERÇEK ZAMANLI YÜKLENME TAKİBİ
+    const progressBar = document.getElementById('main-progress');
+    const statusText = document.getElementById('boot-status-text');
+    
+    let initialProgress = 0;
+    const progressInterval = setInterval(() => {
+        if (initialProgress < 75) {
+            initialProgress += Math.floor(Math.random() * 5) + 2;
+            progressBar.style.width = initialProgress + '%';
+        }
+    }, 150);
+
+    window.addEventListener('load', () => {
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        statusText.innerText = 'Sistem Hazır';
+        
+        setTimeout(function() {  
+            const container = document.getElementById('app-container');  
+            const bootUI = document.getElementById('boot-ui');  
+            bootUI.style.opacity = '0';  
+            setTimeout(() => {  
+                container.classList.add('is-loaded');  
+            }, 300);  
+        }, 600);
+    });
+
+    // CANLI TARİH VE SAAT SİSTEMİ  
+    function updateDateTime() {  
+        const now = new Date();  
+        const dayNum = now.getDate();  
+        const monthLong = now.toLocaleDateString('tr-TR', { month: 'long' });  
+        const dayLong = now.toLocaleDateString('tr-TR', { weekday: 'long' });  
+        const yearNum = now.getFullYear();  
+          
+        document.getElementById('status-date').innerText = `${dayNum} ${monthLong}, ${dayLong}, ${yearNum}`;  
+
+        const hours = String(now.getHours()).padStart(2, '0');  
+        const minutes = String(now.getMinutes()).padStart(2, '0');  
+        const seconds = String(now.getSeconds()).padStart(2, '0');  
+          
+        document.getElementById('status-clock').innerText = `${hours}:${minutes}:${seconds}`;  
+    }  
+
+    updateDateTime();  
+    setInterval(updateDateTime, 1000);  
+
+    // PANEL KONTROLLERİ  
+    document.getElementById('settings-app').addEventListener('click', function() {  
+        openAnimatedPanel('settings-screen');  
+    });  
+    
+    // ARTLINK PANEL TETİKLEYİCİ
+    document.getElementById('artlink-app').addEventListener('click', function() {  
+        openAnimatedPanel('artlink-screen');  
+    });  
+
+    function openAnimatedPanel(id) {  
+        const panel = document.getElementById(id);  
+        panel.classList.remove('slide-out');  
+        panel.classList.add('slide-in');  
+        panel.style.display = 'flex';  
+    }  
+
+    function closeAnimatedPanel(id) {  
+        const panel = document.getElementById(id);  
+        panel.classList.remove('slide-in');  
+        panel.classList.add('slide-out');  
+          
+        setTimeout(() => {  
+            panel.style.display = 'none';  
+            panel.classList.remove('slide-out');  
+        }, 650);  
+    }  
+
+    // ======================================================= */
+    // SADECE EKLENEN: ARTLINK JAVASCRIPT FONKSİYONLARI */
+    // ======================================================= */
+    function triggerFileSelect() {
+        document.getElementById('artlink-file-input').click();
+    }
+
+    document.getElementById('artlink-file-input').addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+            handleImageUpload(e.target.files[0]);
+        }
+    });
+
+    const dropzone = document.getElementById('artlink-upload-zone');
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleImageUpload(e.dataTransfer.files[0]);
+        }
+    });
+
+// KULLANICI GÖRSELİ SEÇTİĞİ ANDA DOĞRUDAN ÇALIŞACAK ANA FONKSİYON
+function handleImageUpload(file) {
+    if (!file) return;
+
+    // ⚠️ Buradaki süslü parantezlerin ({}) açılıp kapandığını kontrol et:
+    const maksimumBoyut = 32 * 1024 * 1024; 
+    if (file.size > maksimumBoyut) {
+        alert("❌ Görsel boyutu çok büyük!\nArtLink en fazla 32 MB boyutundaki görselleri destekler.");
+        return;
+    } // <-- Bu parantezin doğru kapandığından emin ol
+
+    // Kodun geri kalanı (adminModuAktifMi...) aynen devam etmeli
+
+    // 1. Limit ve Admin Kontrolleri
+    const adminModuAktifMi = localStorage.getItem('artlink_admin_modu') === 'true';
+
+    if (!adminModuAktifMi) {
+        const bugun = new Date().toLocaleDateString('tr-TR');
+        let yuklemeGecmisi = JSON.parse(localStorage.getItem('artlink_limit_sistemi'));
+
+        if (!yuklemeGecmisi || yuklemeGecmisi.tarih !== bugun) {
+            yuklemeGecmisi = { tarih: bugun, sayac: 0 };
+        }
+
+        if (yuklemeGecmisi.sayac >= 25) {
+            alert(`Günlük yükleme limitine ulaştınız (25/25)!\nHaklarınız yarın tekrardan yenilenecektir.`);
+            resetArtLink();
+            return; 
+        }
+    }
+
+    const apiKey = '0d55b60e7fa4a50abd1ed526645282ba'; 
+
+    // 2. Arayüz Değişimi: Yükleme alanını kapat, Görsel İşleniyor ekranını aç!
+    document.getElementById('artlink-upload-zone').style.display = 'none';
+    document.getElementById('artlink-loading-zone').style.display = 'flex';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    // NOT: url sonuna expiration eklemediğimiz için ImgBB bunu otomatik olarak ÖMÜR BOYU (Sınırsız) saklar.
+    let uploadUrl = `https://api.imgbb.com/1/upload?key=${apiKey}`;
+
+    fetch(uploadUrl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (!adminModuAktifMi) {
+                let yuklemeGecmisi = JSON.parse(localStorage.getItem('artlink_limit_sistemi'));
+                yuklemeGecmisi.sayac += 1;
+                localStorage.setItem('artlink_limit_sistemi', JSON.stringify(yuklemeGecmisi));
+            }
+
+            const realDirectLink = data.data.url; 
+
+            // Linkleri ekrana basıyoruz
+            document.getElementById('artlink-preview-img').src = realDirectLink;
+            document.getElementById('link-direct').innerText = realDirectLink;
+            document.getElementById('link-html').innerText = `<img src="${realDirectLink}" alt="ArtLink Image">`;
+            document.getElementById('link-md').innerText = `![ArtLink](${realDirectLink})`;
+
+            // Yükleme ekranını kapat, başarı ekranını aç
+            document.getElementById('artlink-loading-zone').style.display = 'none';
+            document.getElementById('artlink-success-zone').style.display = 'flex';
+        } else {
+            alert('Görsel yüklenirken bir hata oluştu: ' + data.error.message);
+            resetArtLink();
+        }
+    })
+    .catch(error => {
+        console.error('Hata:', error);
+        alert('Sunucuya bağlanılamadı.');
+        resetArtLink();
+    });
+}
+
+// Sistemi sıfırlayıp ilk ekrana döndüren fonksiyon
+function resetArtLink() {
+    document.getElementById('artlink-loading-zone').style.display = 'none';
+    document.getElementById('artlink-success-zone').style.display = 'none';
+    document.getElementById('artlink-upload-zone').style.display = 'block';
+}
+
+
+    function copyToClipboard(elementId, btn) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const oldText = btn.innerText;
+            btn.innerText = "Kopyalandı!";
+            btn.style.background = "#34c759";
+            btn.style.color = "#fff";
+            setTimeout(() => {
+                btn.innerText = oldText;
+                btn.style.background = "#ffffff";
+                btn.style.color = "#000000";
+            }, 1200);
+        });
+    }
+
+    function resetArtLink() {
+        document.getElementById('artlink-file-input').value = '';
+        document.getElementById('artlink-success-zone').style.display = 'none';
+        document.getElementById('artlink-upload-zone').style.display = 'flex';
+    }
+
+    // JEST TABANLI ÇİFT TIKLAMA GERİ DÖNÜŞ SİSTEMİ  
+    const gesturePanel = document.getElementById('global-gesture-back');  
+    const gestureAction = document.getElementById('gesture-back-action');  
+    const settingsScreen = document.getElementById('settings-screen');  
+    const aboutScreen = document.getElementById('about-screen');  
+    const artlinkScreen = document.getElementById('artlink-screen');  
+
+    let lastTap = 0;  
+    let gestureTimeout;  
+
+    window.addEventListener('click', function(e) {  
+        if (e.clientX <= 40 && (settingsScreen.style.display === 'flex' || aboutScreen.style.display === 'flex' || artlinkScreen.style.display === 'flex')) {  
+            const currentTime = new Date().getTime();  
+            const tapLength = currentTime - lastTap;  
+              
+            if (tapLength < 300 && tapLength > 0) {  
+                gesturePanel.classList.add('gesture-active');  
+                  
+                clearTimeout(gestureTimeout);  
+                gestureTimeout = setTimeout(() => {  
+                    gesturePanel.classList.remove('gesture-active');  
+                }, 2500);  
+            }  
+            lastTap = currentTime;  
+        }  
+    });  
+
+    gestureAction.addEventListener('click', function() {  
+        gesturePanel.classList.remove('gesture-active');  
+          
+        if (aboutScreen.style.display === 'flex') {  
+            closeAnimatedPanel('about-screen');  
+        }   
+        else if (settingsScreen.style.display === 'flex') {  
+            closeAnimatedPanel('settings-screen');  
+        }  
+        else if (artlinkScreen.style.display === 'flex') {  
+            closeAnimatedPanel('artlink-screen');  
+        }  
+    });  
+    
+    // ÇİFT TIKLAMALI VE KRİPTOGRAFİK GÜVENLİ GÖRÜNMEZ BUTON SİSTEMİ
+window.addEventListener('DOMContentLoaded', (event) => {
+    const gizliButon = document.getElementById('gizli-admin-btn');
+    let butonTiklamaSayaci = 0;
+    let butonZamanlayici;
+
+    // SHA-256 ile şifreleme yapan gizli fonksiyon
+    async function sha256(string) {
+        const utf8 = new TextEncoder().encode(string);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    if (gizliButon) {
+        gizliButon.addEventListener('click', async function() {
+            butonTiklamaSayaci++;
+            
+            clearTimeout(butonZamanlayici);
+            // Yarım saniye (500ms) içinde ikinci tıklama gelmezse sayacı sıfırla
+            butonZamanlayici = setTimeout(() => {
+                butonTiklamaSayaci = 0;
+            }, 500);
+
+            // Eğer tam 2 kez peş peşe tıklandıysa (Çift Tıklama)
+            if (butonTiklamaSayaci === 2) {
+                butonTiklamaSayaci = 0; // Sayacı sıfırla
+
+                // Şifre sorma kutusunu aç
+                const girilenSifre = prompt("🔒 OmniXOS Geliştirici Modu\nLütfen Sistem Sahibi Şifresini Girin:");
+                
+                if (girilenSifre === null) return; // İptale basılırsa çık
+
+                // Girilen şifreyi arka planda şifreliyoruz
+                const girilenSifreHashi = await sha256(girilenSifre);
+
+                // OmniXOS13495 şifresinin kırılmaz kripto imzası
+                const gercekSifreHashi = "b86e0821b33367fb7fc3b8956926955a121544979ffb73810ffce0d62a03df1b";
+                
+                if (girilenSifreHashi === gercekSifreHashi) {
+                    localStorage.setItem('artlink_admin_modu', 'true');
+                    alert("👑 OmniXOS Geliştirici Modu Aktif Edildi!\nArtLink yükleme limiti bu cihaz için tamamen kaldırıldı.");
+                } else {
+                    alert("❌ Yetkisiz Erişim! Şifre hatalı.");
+                }
+            }
+        });
+    }
+});
+
+</script>  
+
+</body>  
+</html>
