@@ -1153,16 +1153,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
     if (gizliButon) {
         gizliButon.addEventListener('click', async function() {
             butonTiklamaSayaci++;
-            
-            clearTimeout(butonZamanlayici);
-            // Yarım saniye (500ms) içinde ikinci tıklama gelmezse sayacı sıfırla
-            butonZamanlayici = setTimeout(() => {
-                butonTiklamaSayaci = 0;
-            }, 500);
-
-            // Eğer tam 2 kez peş peşe tıklandıysa (Çift Tıklama)
-            if (butonTiklamaSayaci === 2) {
-                butonTiklamaSayaci = 0; // Sayacı sıfırla
 
                 // Şifre sorma kutusunu aç
                 const girilenSifre = prompt("🔒 OmniXOS Geliştirici Modu\nLütfen Sistem Sahibi Şifresini Girin:");
