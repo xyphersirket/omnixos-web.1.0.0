@@ -1150,30 +1150,27 @@ window.addEventListener('DOMContentLoaded', (event) => {
         return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    if (gizliButon) {
+     if (gizliButon) {
         gizliButon.addEventListener('click', async function() {
-            butonTiklamaSayaci++;
-
-                // Şifre sorma kutusunu aç
-                const girilenSifre = prompt("🔒 OmniXOS Geliştirici Modu\nLütfen Sistem Sahibi Şifresini Girin:");
+            // Tek tıkla doğrudan şifre sorma kutusunu açıyoruz
+            const girilenSifre = prompt("🔒 OmniXOS Geliştirici Modu\nLütfen Sistem Şifresini Giriniz:");
+            
+            if (girilenSifre !== null && girilenSifre.trim() !== "") {
+                // Şifrenizi SHA-256 ile özetleyip kontrol etme alanı
+                const girdiOzeti = await sha256(girilenSifre);
                 
-                if (girilenSifre === null) return; // İptale basılırsa çık
-
-                // Girilen şifreyi arka planda şifreliyoruz
-                const girilenSifreHashi = await sha256(girilenSifre);
-
-                // OmniXOS13495 şifresinin kırılmaz kripto imzası
-                const gercekSifreHashi = "b86e0821b33367fb7fc3b8956926955a121544979ffb73810ffce0d62a03df1b";
-                
-                if (girilenSifreHashi === gercekSifreHashi) {
+                // Admin şifrenizin hash eşleşme kontrolü
+                if (girdiOzeti === '72661c9ec8d0e70ba7f4f6e492f398ba582d909062aa48d6db9b8979e8c3b03f') {
                     localStorage.setItem('artlink_admin_modu', 'true');
-                    alert("👑 OmniXOS Geliştirici Modu Aktif Edildi!\nArtLink yükleme limiti bu cihaz için tamamen kaldırıldı.");
+                    alert("🔓 Geliştirici Modu Aktif Edildi!\nArtLink günlük yükleme limiti kaldırıldı.");
+                    location.reload();
                 } else {
-                    alert("❌ Yetkisiz Erişim! Şifre hatalı.");
+                    alert("❌ Hatalı şifre girdiniz!");
                 }
             }
         });
     }
+
 });
 
 </script>  
