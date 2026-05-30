@@ -1057,10 +1057,12 @@ function handleImageUpload(file) {
         }
     })
     .catch(error => {
-        console.error('Hata:', error);
-        alert('Sunucuya bağlanılamadı.');
-        resetArtLink();
-    });
+    console.error('Hata:', error);
+    // Sadece "Sunucuya bağlanılamadı" demek yerine gerçek hatayı ekrana bassın:
+    alert('Sunucuya bağlanılamadı. Detay: ' + error.message);
+    resetArtLink();
+});
+    
 }
 
 // Sistemi sıfırlayıp ilk ekrana döndüren fonksiyon
