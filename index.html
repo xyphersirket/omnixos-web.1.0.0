@@ -34,7 +34,7 @@
 
         /* ANA ARKA PLAN */  
         .background-container {  
-            background-image: url('https://r.resimlink.com/QlWI-SGy.jpg');  
+            background-image: url('https://r.resimlink.com/8wE5Pp.jpg');  
             background-size: cover;  
             background-position: center;  
             height: 100%;  
@@ -710,6 +710,22 @@
         }
         .reset-btn:hover { background: rgba(255,255,255,0.15); }
 
+#labs-screen{
+    background:
+        radial-gradient(circle at top left,
+        rgba(0,122,255,0.18),
+        transparent 35%),
+
+        radial-gradient(circle at top right,
+        rgba(168,85,247,0.18),
+        transparent 35%),
+
+        linear-gradient(
+        180deg,
+        #050505 0%,
+        #0b0b12 100%);
+}
+
         /* KEYFRAMES */  
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes shine { to { background-position: 200% center; } }  
@@ -734,7 +750,7 @@
     <div class="overlay"></div>  
       
     <div id="app-container" class="content-box">  
-        <img src="https://r.resimlink.com/1_GkmOX.png" alt="Logo" class="logo">  
+        <img src="https://r.resimlink.com/mJydoaAT.png" alt="Logo" class="logo">  
           
         <div class="brand-wrapper">  
             <h1 class="brand-name">Omni<span class="xos-style">XOS</span></h1>  
@@ -752,11 +768,11 @@
 
         <div class="desktop-apps">  
             <div id="artlink-app" class="app-item">  
-                <img src="https://r.resimlink.com/rZ8PC1hJ.png" alt="ArtLink" class="app-icon">  
+                <img src="https://r.resimlink.com/KH6f-NM.png" alt="ArtLink" class="app-icon">  
                 <p class="app-label">ArtLink</p>  
             </div>  
             <div id="settings-app" class="app-item">  
-                <img src="https://r.resimlink.com/yf3LHOvAecI.png" alt="Ayarlar" class="app-icon">  
+                <img src="https://r.resimlink.com/pOC1y.png" alt="Ayarlar" class="app-icon">  
                 <p class="app-label">Ayarlar</p>  
             </div>  
         </div>  
@@ -836,6 +852,19 @@
         </div>  
         <span class="settings-btn-text">OmniXOS Hakkında</span>  
         <span class="faded-edge-chevron">&gt;</span>  
+        
+        <button class="settings-btn"
+        onclick="openAnimatedPanel('labs-screen')">
+
+    <div class="icon-container">
+        <img src="https://r.resimlink.com/R6qkud0Y5X2i.png"
+             alt="OmniXOS Labs"
+             class="settings-btn-icon">
+    </div>
+
+    <span class="settings-btn-text">OmniXOS Labs</span>
+
+    <span class="faded-edge-chevron">&gt;</span>
     </button>  
 </div>  
 
@@ -847,7 +876,7 @@
     </div>  
     <div class="about-content">  
         <img src="https://r.resimlink.com/yie5LMpKjVwY.png" alt="OmniXOS Logo" class="about-logo">  
-        <span class="version-text">1.0.0</span>  
+        <span class="version-text">1.5.0</span>  
           
         <div class="info-button-group">  
             <div class="info-row-btn">  
@@ -856,13 +885,13 @@
             </div>  
             <div class="info-row-btn">  
                 <span class="info-left-text">XOS Sürümü</span>  
-                <span class="info-right-text">1.0.0</span>  
+                <span class="info-right-text">1.5.0</span>  
             </div>  
         </div>  
 
         <div class="single-info-box">  
             <span class="info-left-text">En son güncelleme</span>  
-            <span class="info-right-text">15.05.2026</span>  
+            <span class="info-right-text">13.06.2026</span>  
         </div>  
 
         <div class="single-info-box">  
@@ -1005,7 +1034,7 @@ function handleImageUpload(file) {
     // Kodun geri kalanı (adminModuAktifMi...) aynen devam etmeli
 
 // 1. Limit ve Admin Kontrolleri (Hafıza Boşsa Patlamayan Güvenli Sürüm)
-const adminModuAktifMi = localStorage.getItem('artlink_admin_modu') === 'true';
+const adminModuAktifMi = localStorage.getItem('x93a_security_core') === 'true';
 
 if (!adminModuAktifMi) {
     const bugun = new Date().toLocaleDateString('tr-TR');
@@ -1144,43 +1173,132 @@ function resetArtLink() {
     });  
     
     // ÇİFT TIKLAMALI VE KRİPTOGRAFİK GÜVENLİ GÖRÜNMEZ BUTON SİSTEMİ
-window.addEventListener('DOMContentLoaded', (event) => {
-    const gizliButon = document.getElementById('gizli-admin-btn');
-    let butonTiklamaSayaci = 0;
-    let butonZamanlayici;
+window.addEventListener('DOMContentLoaded', () => {
 
-    // SHA-256 ile şifreleme yapan gizli fonksiyon
+    const gizliButon = document.getElementById('gizli-admin-btn');
+
     async function sha256(string) {
         const utf8 = new TextEncoder().encode(string);
         const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        return hashArray
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
     }
 
-     if (gizliButon) {
-        gizliButon.addEventListener('click', async function() {
-            // Tek tıkla doğrudan şifre sorma kutusunu açıyoruz
-            const girilenSifre = prompt("🔒 OmniXOS Geliştirici Modu\nLütfen Sistem Şifresini Giriniz:");
-            
-            if (girilenSifre !== null && girilenSifre.trim() !== "") {
-                // Şifrenizi SHA-256 ile özetleyip kontrol etme alanı
-                const girdiOzeti = await sha256(girilenSifre);
-                
-                // Admin şifrenizin hash eşleşme kontrolü
-                if (girdiOzeti === '72661c9ec8d0e70ba7f4f6e492f398ba582d909062aa48d6db9b8979e8c3b03f') {
-                    localStorage.setItem('artlink_admin_modu', 'true');
-                    alert("🔓 Geliştirici Modu Aktif Edildi!\nArtLink günlük yükleme limiti kaldırıldı.");
-                    location.reload();
-                } else {
-                    alert("❌ Hatalı şifre girdiniz!");
-                }
+    if (gizliButon) {
+
+        gizliButon.addEventListener('click', async () => {
+
+            const girilenSifre = prompt(
+                "🔒 OmniXOS Geliştirici Modu\n\nSistem şifresini giriniz:"
+            );
+
+            if (!girilenSifre) return;
+
+            const girdiOzeti = await sha256(girilenSifre);
+
+            if (
+    girdiOzeti ===
+    '1bf576bbbf6f9060c9c0ef19957a4292458999c6f15856fb2fd5190594c34860'
+){
+
+                localStorage.setItem('artlink_admin_modu', 'true');
+
+                alert(
+                    "🔓 Geliştirici Modu Aktif!\n\nArtLink limitleri kaldırıldı."
+                );
+
+                location.reload();
+
+            } else {
+
+                alert("❌ Hatalı şifre!");
+
             }
+
         });
+
     }
 
 });
 
+
+   // kodların
+
+   setInterval(() => {
+
+       if (
+           window.outerWidth - window.innerWidth > 160 ||
+           window.outerHeight - window.innerHeight > 160
+       ) {
+
+           document.body.innerHTML = `
+               <div style="
+                   background:#000;
+                   color:#fff;
+                   height:100vh;
+                   display:flex;
+                   align-items:center;
+                   justify-content:center;
+                   font-size:22px;
+                   font-family:sans-serif;
+               ">
+                   OmniXOS Security Triggered
+               </div>
+           `;
+
+       }
+
+   }, 1000);
+   
+   document.addEventListener('visibilitychange', () => {
+
+    if (document.hidden) {
+
+        document.body.style.filter = 'blur(25px)';
+
+    } else {
+
+        document.body.style.filter = 'blur(0px)';
+
+    }
+
+});
 </script>  
 
+<div id="labs-screen" class="full-panel">
+
+    <div class="panel-header">
+        <button class="back-btn-img"
+                onclick="closeAnimatedPanel('labs-screen')">
+            <img src="https://r.resimlink.com/xfhFuyOeTrG.png">
+        </button>
+
+        <span class="panel-title">OmniXOS Labs</span>
+    </div>
+
+    <div class="single-info-box">
+        <span class="info-left-text">Gelişmiş Animasyonlar</span>
+        <span class="info-right-text">Açık</span>
+    </div>
+
+    <div class="single-info-box">
+        <span class="info-left-text">Liquid Glass Efektleri</span>
+        <span class="info-right-text">Beta</span>
+    </div>
+
+    <div class="single-info-box">
+        <span class="info-left-text">Yeni Başlatıcı</span>
+        <span class="info-right-text">Deneysel</span>
+    </div>
+
+    <div class="single-info-box">
+        <span class="info-left-text">OmniXOS AI</span>
+        <span class="info-right-text">Yakında</span>
+    </div>
+
+</div>
 </body>  
 </html>
