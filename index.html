@@ -1,5 +1,7 @@
 <!DOCTYPE html>  
 <html lang="tr">  
+<link rel="icon" type="image/png" href="https://r.resimlink.com/m2l9bu-kK.png">
+<link rel="apple-touch-icon" href="https://r.resimlink.com/m2l9bu-kK.png">
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
@@ -91,16 +93,23 @@
             line-height: 1;  
         }  
 
-        .xos-style {  
-            background: linear-gradient(135deg, #fcd5ce 0%, #e2d1f9 25%, #d1ede1 50%, #e2d1f9 75%, #fcd5ce 100%);  
-            background-size: 200% auto;  
-            -webkit-background-clip: text;  
-            -webkit-text-fill-color: transparent;  
-            background-clip: text;  
-            display: inline-block;  
-            font-weight: 800;  
-            animation: shine 5s linear infinite;  
-        }  
+.xos-style {
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f8fbff 15%,
+        #e0f2ff 35%,
+        #bde7ff 60%,
+        #d6dbe1 85%,
+        #ffffff 100%
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    animation: xosGlow 3s ease-in-out infinite;
+}
 
         /* YÜKLEME ÇUBUĞU VE METNİ */  
         .boot-elements {  
@@ -178,7 +187,10 @@
             width: 85px;  
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);  
         }  
-
+        .app-item:active{
+    transform: scale(0.85) rotate(-1deg);
+    transition: 0.1s;
+}
         .app-item:hover { transform: scale(1.1); }  
 
         .app-icon {  
@@ -325,7 +337,7 @@
         }  
 
         .about-logo {  
-            width: 260px;  
+            width: 280px;  
             height: auto;  
             margin-bottom: 0;  
             filter: drop-shadow(0 8px 35px rgba(0, 0, 0, 0.5));  
@@ -620,7 +632,7 @@
             flex-direction: column;
             align-items: center;
         }
-
+        
         .result-image-wrapper {
             width: 100%;
             max-height: 200px;
@@ -726,6 +738,137 @@
         #0b0b12 100%);
 }
 
+.app-screen {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    z-index: 999;
+    display: none;
+}
+
+.ios-open {
+    animation: iosOpen 0.35s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes iosOpen {
+    from {
+        opacity: 0;
+        transform: scale(0.15);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.home-indicator{
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 135px;
+    height: 5px;
+
+    background: rgba(255,255,255,0.35);
+
+    border-radius: 999px;
+
+    z-index: 999999;
+
+    /* iOS hissi */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    box-shadow: 0 0 12px rgba(255,255,255,0.15);
+
+    opacity: 0.9;
+}
+
+#dynamic-island{
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.2);
+
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    opacity: 0;
+
+    transition: all 0.6s cubic-bezier(.22,1,.36,1);
+
+    z-index: 999999;
+}
+
+#dynamic-island.show{
+    width: 180px;
+    height: 40px;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+#artlink-toast{
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%) scale(.2);
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 999px;
+    background: rgba(0,0,0,.85);
+
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    font-size: .85rem;
+    font-weight: 600;
+
+    opacity: 0;
+
+    transition: all .6s cubic-bezier(.22,1,.36,1);
+
+    z-index: 999999;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#artlink-toast.show{
+    width: 190px;
+    height: 40px;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+@keyframes xosGlow {
+    0%,100%{
+        filter: drop-shadow(0 0 4px rgba(10,132,255,.2));
+    }
+
+    50%{
+        filter: drop-shadow(0 0 12px rgba(10,132,255,.8));
+    }
+}
         /* KEYFRAMES */  
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes shine { to { background-position: 200% center; } }  
@@ -805,7 +948,9 @@
             <p class="upload-title">Görsel İşleniyor...</p>
             <p class="upload-subtitle">Linkler oluşturuluyor, lütfen bekleyin.</p>
         </div>
-
+        
+        <div id="artlink-toast">Linkiniz Oluşturuldu </div>
+        
         <div class="artlink-success-view" id="artlink-success-zone">
             <div class="result-image-wrapper">
                 <img src="" alt="Önizleme" class="result-preview" id="artlink-preview-img">
@@ -876,7 +1021,7 @@
     </div>  
     <div class="about-content">  
         <img src="https://r.resimlink.com/yie5LMpKjVwY.png" alt="OmniXOS Logo" class="about-logo">  
-        <span class="version-text">1.5.0</span>  
+        <span class="version-text">2.0.0</span>  
           
         <div class="info-button-group">  
             <div class="info-row-btn">  
@@ -885,18 +1030,18 @@
             </div>  
             <div class="info-row-btn">  
                 <span class="info-left-text">XOS Sürümü</span>  
-                <span class="info-right-text">1.5.0</span>  
+                <span class="info-right-text">2.0.0</span>  
             </div>  
         </div>  
 
         <div class="single-info-box">  
             <span class="info-left-text">En son güncelleme</span>  
-            <span class="info-right-text">13.06.2026</span>  
+            <span class="info-right-text">22.06.2026</span>  
         </div>  
 
         <div class="single-info-box">  
             <span class="info-left-text">Güncelleme hakkında bilgi</span>  
-            <span class="info-right-text">Bulunmuyor</span>  
+            <span class="info-right-text">Kapalı</span>  
         </div>  
         <!-- Gizli Görünmez Buton Alanı -->
 <div style="text-align: center; margin-top: 10px;">
@@ -970,15 +1115,6 @@
     updateDateTime();  
     setInterval(updateDateTime, 1000);  
 
-    // PANEL KONTROLLERİ  
-    document.getElementById('settings-app').addEventListener('click', function() {  
-        openAnimatedPanel('settings-screen');  
-    });  
-    
-    // ARTLINK PANEL TETİKLEYİCİ
-    document.getElementById('artlink-app').addEventListener('click', function() {  
-        openAnimatedPanel('artlink-screen');  
-    });  
 
     function openAnimatedPanel(id) {  
         const panel = document.getElementById(id);  
@@ -1073,6 +1209,15 @@ if (!adminModuAktifMi) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+          const toast = document.getElementById('artlink-toast');
+
+// görünür yap
+toast.classList.add('show');
+
+// 2 saniye sonra kapat
+setTimeout(() => {
+    toast.classList.remove('show');
+}, 2000);
             if (!adminModuAktifMi) {
                 let yuklemeGecmisi = JSON.parse(localStorage.getItem('artlink_limit_sistemi'));
                 yuklemeGecmisi.sayac += 1;
@@ -1171,7 +1316,47 @@ function resetArtLink() {
             closeAnimatedPanel('artlink-screen');  
         }  
     });  
-    
+    // OmniXOS Swipe Back Sistemi
+
+let swipeStartX = 0;
+
+document.addEventListener('touchstart', function(e) {
+
+    swipeStartX = e.touches[0].clientX;
+
+});
+
+document.addEventListener('touchend', function(e) {
+
+    const swipeEndX = e.changedTouches[0].clientX;
+    const swipeDistance = swipeEndX - swipeStartX;
+
+    // Sol taraftaki ilk 70px alan
+    if (swipeStartX <= 70 && swipeDistance > 80) {
+
+        const labsScreen = document.getElementById('labs-screen');
+
+        // OmniXOS Hakkında -> Ayarlar
+        if (aboutScreen.style.display === 'flex') {
+
+            closeAnimatedPanel('about-screen');
+
+        }
+
+        // OmniXOS Labs -> Ayarlar
+        else if (
+            labsScreen &&
+            labsScreen.style.display === 'flex'
+        ) {
+
+            closeAnimatedPanel('labs-screen');
+
+        }
+
+    }
+
+});
+
     // ÇİFT TIKLAMALI VE KRİPTOGRAFİK GÜVENLİ GÖRÜNMEZ BUTON SİSTEMİ
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -1266,6 +1451,124 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+function openApp(screenId) {
+
+    pushPanelHistory();
+
+    const screen = document.getElementById(screenId);
+
+    screen.classList.remove('slide-in');
+    screen.classList.remove('slide-out');
+
+    screen.style.display = 'flex';
+    screen.classList.add('ios-open');
+
+    setTimeout(() => {
+        screen.classList.remove('ios-open');
+    }, 350);
+
+}
+
+document.getElementById('settings-app').addEventListener('click', () => {
+  navigator.vibrate(10);
+    openApp('settings-screen');
+});
+
+document.getElementById('artlink-app').addEventListener('click', () => {
+  navigator.vibrate(10);
+    openApp('artlink-screen');
+});
+
+// Android geri tuşu desteği
+
+function pushPanelHistory() {
+    history.pushState({ omniPanel: true }, "");
+}
+
+window.addEventListener("popstate", function() {
+
+    const labsScreen = document.getElementById("labs-screen");
+
+    if (aboutScreen.style.display === "flex") {
+
+        closeAnimatedPanel("about-screen");
+        pushPanelHistory();
+
+    }
+    else if (labsScreen && labsScreen.style.display === "flex") {
+
+        closeAnimatedPanel("labs-screen");
+        pushPanelHistory();
+
+    }
+    else if (settingsScreen.style.display === "flex") {
+
+        closeAnimatedPanel("settings-screen");
+        pushPanelHistory();
+
+    }
+    else if (artlinkScreen.style.display === "flex") {
+
+        closeAnimatedPanel("artlink-screen");
+        pushPanelHistory();
+
+    }
+
+});
+
+let startY = 0;
+
+document.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchend', (e) => {
+    let endY = e.changedTouches[0].clientY;
+
+    let diff = startY - endY;
+
+    // yukarı swipe
+    if (diff > 100) {
+
+        const panels = [
+            'settings-screen',
+            'about-screen',
+            'artlink-screen',
+            'labs-screen'
+        ];
+
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+
+            if (el && el.style.display === 'flex') {
+                closeAnimatedPanel(id);
+            }
+        });
+
+    }
+});
+
+window.addEventListener('load', () => {
+
+    const island = document.getElementById('dynamic-island');
+
+    // 1. ortaya çık
+    setTimeout(() => {
+        island.classList.add('show');
+    }, 500);
+
+    // 2. yazı değişimi (isteğe bağlı efekt)
+    setTimeout(() => {
+        document.getElementById('island-text').innerText = "OmniXOS";
+    }, 1500);
+
+    // 3. küçül
+    setTimeout(() => {
+        island.classList.remove('show');
+    }, 3000);
+
+});
 </script>  
 
 <div id="labs-screen" class="full-panel">
@@ -1298,7 +1601,12 @@ window.addEventListener('DOMContentLoaded', () => {
         <span class="info-left-text">OmniXOS AI</span>
         <span class="info-right-text">Yakında</span>
     </div>
+</div>
 
+<div class="home-indicator"></div>
+
+<div id="dynamic-island">
+    <span id="island-text">Hoşgeldiniz</span>
 </div>
 </body>  
 </html>
